@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="55e77dfe-1564-4a98-a6da-591a1d919b2d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="additionFlow" doc:id="1dec94ce-75b3-4e3d-b649-c96343cd891c" >
+		<http:listener doc:name="Listener" doc:id="8313b340-8fa5-4833-9592-01e33adad1dd" config-ref="HTTP_Listener_config" path="/addition"/>
+		<set-variable value="#[payload.a ++ payload.b]" doc:name="Set Variable" doc:id="a748dad1-571a-4fda-8fb1-f8a69e0cb80f" variableName="add"/>
+		<ee:transform doc:name="Transform Message" doc:id="53bd6cda-8c10-4d4d-9ce4-fc61cf2c9530" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"sum": payload.a+payload.b,
+	"multiplication": payload.a*payload.b,
+	"subtraction": payload.a-payload.b,
+	"division": payload.a/payload.b
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8a9e612f-0259-4a6b-8047-b0b593fd3a3c" message="vars.payload.a ++ payload.b"/>
+	</flow>
+</mule>
